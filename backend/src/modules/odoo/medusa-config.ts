@@ -1,7 +1,6 @@
-import { defineConfig } from "@medusajs/framework"
+// src/modules/odoo/medusa-config.ts
 
-export default defineConfig({
-  // otras configuraciones ...
+const config = {
   modules: [
     {
       resolve: "./src/modules/odoo",
@@ -13,4 +12,6 @@ export default defineConfig({
       },
     },
   ],
-})
+};
+
+export default config;
