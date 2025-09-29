@@ -50,6 +50,16 @@ const medusaConfig = {
     disable: SHOULD_DISABLE_ADMIN,
   },
   modules: [
+    // Módulo Odoo para integración ERP
+    ...(process.env.ODOO_URL && process.env.ODOO_DB && process.env.ODOO_USERNAME && process.env.ODOO_API_KEY ? [{
+      resolve: './src/modules/odoo',
+      options: {
+        url: process.env.ODOO_URL,
+        dbName: process.env.ODOO_DB,
+        username: process.env.ODOO_USERNAME,
+        apiKey: process.env.ODOO_API_KEY,
+      },
+    }] : []),
     {
       key: Modules.FILE,
       resolve: '@medusajs/file',

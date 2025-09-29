@@ -53,7 +53,7 @@ Video instructions: https://youtu.be/PPxenu7IjGM
 
 - `cd backend/`
 - `pnpm install` or `npm i`
-- Rename `.env.template` ->  `.env`
+- Copy `env.example` to `.env` and configure your environment variables
 - To connect to your online database from your local machine, copy the `DATABASE_URL` value auto-generated on Railway and add it to your `.env` file.
   - If connecting to a new database, for example a local one, run `pnpm ib` or `npm run ib` to seed the database.
 - `pnpm dev` or `npm run dev`
