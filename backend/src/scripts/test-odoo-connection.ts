@@ -37,18 +37,29 @@ async function testOdooConnection() {
 
     // 2. Verificar que el módulo se puede importar
     console.log('\n📦 Verificando módulo Odoo:');
+    let OdooService;
     try {
-      const OdooModule = await import('../modules/odoo/service');
+      const module = await import('../modules/odoo/service.js');
+      OdooService = module.default;
       console.log('✅ Módulo Odoo importado correctamente');
+      console.log(`   Clase: ${OdooService.name}`);
     } catch (error) {
       console.log('❌ Error importando módulo Odoo:', error.message);
-      return;
+      console.log('   Intentando con importación directa...');
+      try {
+        const { default: ServiceClass } = await import('../modules/odoo/service.js');
+        OdooService = ServiceClass;
+        console.log('✅ Módulo Odoo importado con importación directa');
+        console.log(`   Clase: ${OdooService.name}`);
+      } catch (error2) {
+        console.log('❌ Error con importación directa:', error2.message);
+        return;
+      }
     }
 
     // 3. Crear instancia del servicio
     console.log('\n🔧 Creando instancia del servicio:');
     try {
-      const OdooService = (await import('../modules/odoo/service')).default;
       const odooService = new OdooService({}, {
         url: envVars.ODOO_URL,
         dbName: envVars.ODOO_DB,
@@ -56,6 +67,9 @@ async function testOdooConnection() {
         apiKey: envVars.ODOO_API_KEY
       });
       console.log('✅ Servicio Odoo creado correctamente');
+      console.log(`   URL configurada: ${envVars.ODOO_URL}`);
+      console.log(`   Base de datos: ${envVars.ODOO_DB}`);
+      console.log(`   Usuario: ${envVars.ODOO_USERNAME}`);
     } catch (error) {
       console.log('❌ Error creando servicio Odoo:', error.message);
       return;
@@ -64,7 +78,6 @@ async function testOdooConnection() {
     // 4. Probar conexión
     console.log('\n🌐 Probando conexión con Odoo:');
     try {
-      const OdooService = (await import('../modules/odoo/service')).default;
       const odooService = new OdooService({}, {
         url: envVars.ODOO_URL,
         dbName: envVars.ODOO_DB,
