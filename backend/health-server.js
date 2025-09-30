@@ -83,7 +83,7 @@ server.listen(PORT, '0.0.0.0', () => {
   
   // Start Medusa in background
   console.log('🚀 Starting Medusa in background...');
-  const medusaProcess = spawn('npm', ['run', 'start:medusa'], {
+  const medusaProcess = spawn('medusa', ['start'], {
     stdio: 'pipe',
     shell: true,
     env: { ...process.env }
@@ -105,7 +105,7 @@ server.listen(PORT, '0.0.0.0', () => {
       console.log('🔄 Restarting Medusa in 5 seconds...');
       setTimeout(() => {
         console.log('🚀 Starting Medusa in background...');
-        const newMedusaProcess = spawn('npm', ['run', 'start:medusa'], {
+        const newMedusaProcess = spawn('medusa', ['start'], {
           stdio: 'pipe',
           shell: true,
           env: { ...process.env }
