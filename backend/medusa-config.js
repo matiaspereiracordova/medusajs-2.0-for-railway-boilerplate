@@ -55,9 +55,8 @@ const medusaConfig = {
   },
   admin: {
     backendUrl: BACKEND_URL,
-    disable: false,
-    // No especificar path - usar el por defecto de Medusa
-    outDir: "./admin/dist",
+    disable: true, // Deshabilitar temporalmente para que el backend funcione
+    // outDir: "./admin/dist",
   },
   modules: [
     // Módulo Odoo para integración ERP
