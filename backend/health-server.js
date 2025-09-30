@@ -51,24 +51,54 @@ server.listen(PORT, '0.0.0.0', () => {
 
 // Proxy function to forward requests to Medusa
 function proxyToMedusa(req, res) {
+  console.log(`🔄 Proxying ${req.method} ${req.url} to Medusa on port ${MEDUSA_PORT}`);
+  
   const options = {
     hostname: 'localhost',
     port: MEDUSA_PORT,
     path: req.url,
     method: req.method,
-    headers: req.headers
+    headers: {
+      ...req.headers,
+      'host': `localhost:${MEDUSA_PORT}`
+    }
   };
 
   const proxyReq = http.request(options, (proxyRes) => {
-    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    console.log(`✅ Medusa responded with ${proxyRes.statusCode} for ${req.method} ${req.url}`);
+    
+    // Copy response headers
+    Object.keys(proxyRes.headers).forEach(key => {
+      res.setHeader(key, proxyRes.headers[key]);
+    });
+    
+    res.writeHead(proxyRes.statusCode);
     proxyRes.pipe(res);
   });
 
   proxyReq.on('error', (error) => {
-    console.error('Proxy error:', error);
-    res.writeHead(503);
+    console.error(`❌ Proxy error for ${req.method} ${req.url}:`, error.message);
+    res.writeHead(503, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ 
       error: 'Medusa service unavailable',
+      status: 'error',
+      message: error.message
+    }));
+  });
+
+  // Handle request timeout
+  proxyReq.setTimeout(10000, () => {
+    console.error(`⏰ Proxy timeout for ${req.method} ${req.url}`);
+    proxyReq.destroy();
+    res.writeHead(504, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.end(JSON.stringify({ 
+      error: 'Request timeout',
       status: 'error'
     }));
   });
@@ -80,12 +110,16 @@ function proxyToMedusa(req, res) {
 function startMedusa() {
   console.log('🚀 Starting Medusa in background...');
   
-  const medusaProcess = spawn('npx', ['medusa', 'start'], {
+  const medusaProcess = spawn('npx', ['medusa', 'start', '--config', 'medusa-config-railway.js'], {
     stdio: 'inherit', // Show Medusa output in logs
     env: {
       ...process.env,
       PORT: MEDUSA_PORT,
-      MEDUSA_DISABLE_ADMIN: 'true'
+      MEDUSA_DISABLE_ADMIN: 'true',
+      // Ensure CORS is properly configured
+      ADMIN_CORS: '*',
+      AUTH_CORS: '*',
+      STORE_CORS: '*'
     }
   });
 

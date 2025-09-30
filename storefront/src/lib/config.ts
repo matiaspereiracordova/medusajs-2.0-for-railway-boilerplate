@@ -12,6 +12,11 @@ if (process.env.RAILWAY_PUBLIC_DOMAIN) {
   MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 }
 
+// Log the backend URL for debugging
+console.log('🔗 Medusa Backend URL:', MEDUSA_BACKEND_URL)
+console.log('🌍 Environment:', process.env.NODE_ENV)
+console.log('🚂 Railway Domain:', process.env.RAILWAY_PUBLIC_DOMAIN)
+
 export const sdk = new Medusa({
   baseUrl: MEDUSA_BACKEND_URL,
   debug: process.env.NODE_ENV === "development",
