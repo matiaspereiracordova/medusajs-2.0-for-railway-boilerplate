@@ -33,6 +33,52 @@ const server = http.createServer((req, res) => {
       uptime: process.uptime(),
       port: PORT
     }));
+  } else if (req.url === '/') {
+    // Show backend info page instead of admin
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Medusa Backend - Railway</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+          .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          .header { color: #6366f1; margin-bottom: 20px; }
+          .status { background: #10b981; color: white; padding: 10px; border-radius: 4px; margin: 20px 0; }
+          .info { background: #f3f4f6; padding: 15px; border-radius: 4px; margin: 10px 0; }
+          .endpoint { background: #e5e7eb; padding: 8px; border-radius: 4px; font-family: monospace; margin: 5px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1 class="header">🚀 Medusa Backend - Railway</h1>
+          <div class="status">✅ Backend is running successfully</div>
+          
+          <div class="info">
+            <h3>📊 Service Information</h3>
+            <p><strong>Status:</strong> Online</p>
+            <p><strong>Port:</strong> ${PORT}</p>
+            <p><strong>Uptime:</strong> ${Math.floor(process.uptime())} seconds</p>
+            <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+          </div>
+          
+          <div class="info">
+            <h3>🔗 Available Endpoints</h3>
+            <div class="endpoint">GET /health - Health check</div>
+            <div class="endpoint">GET /store/* - Store API</div>
+            <div class="endpoint">GET /admin/* - Admin API</div>
+            <div class="endpoint">POST /admin/* - Admin API</div>
+          </div>
+          
+          <div class="info">
+            <h3>📝 Note</h3>
+            <p>The admin panel is temporarily disabled due to build issues. The backend API is fully functional for the storefront.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
   } else {
     // Proxy all other requests to Medusa
     proxyToMedusa(req, res);
@@ -116,7 +162,7 @@ function startMedusa() {
       ...process.env,
       PORT: MEDUSA_PORT,
       MEDUSA_INTERNAL_PORT: MEDUSA_PORT, // Set internal port for Medusa
-      MEDUSA_DISABLE_ADMIN: 'false', // Enable admin
+      MEDUSA_DISABLE_ADMIN: 'true', // Disable admin temporarily due to build issues
       // Ensure CORS is properly configured
       ADMIN_CORS: '*',
       AUTH_CORS: '*',
