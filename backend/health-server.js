@@ -4,12 +4,12 @@ const http = require('http');
 const { spawn } = require('child_process');
 
 const PORT = process.env.PORT || 9000;
-let medusaReady = false;
+const MEDUSA_PORT = 9001; // Medusa will use a different port
 
 console.log('🚀 Starting Health Server for Railway...');
 console.log('🔌 Port:', PORT);
 
-// Create a simple HTTP server for health checks
+// Create a simple HTTP server for health checks only
 const server = http.createServer((req, res) => {
   // Set CORS headers for Railway healthcheck
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -33,25 +33,9 @@ const server = http.createServer((req, res) => {
       uptime: process.uptime(),
       port: PORT
     }));
-  } else if (req.url.startsWith('/admin') || req.url.startsWith('/store') || req.url.startsWith('/auth')) {
-    // Proxy API requests to Medusa when it's ready
-    if (medusaReady) {
-      // Forward to Medusa (this is a simple implementation)
-      res.writeHead(503);
-      res.end(JSON.stringify({ 
-        error: 'Medusa is starting up, please wait...',
-        status: 'starting'
-      }));
-    } else {
-      res.writeHead(503);
-      res.end(JSON.stringify({ 
-        error: 'Service temporarily unavailable',
-        status: 'starting'
-      }));
-    }
   } else {
-    res.writeHead(404);
-    res.end(JSON.stringify({ error: 'Not found' }));
+    // Proxy all other requests to Medusa
+    proxyToMedusa(req, res);
   }
 });
 
@@ -65,30 +49,43 @@ server.listen(PORT, '0.0.0.0', () => {
   startMedusa();
 });
 
+// Proxy function to forward requests to Medusa
+function proxyToMedusa(req, res) {
+  const options = {
+    hostname: 'localhost',
+    port: MEDUSA_PORT,
+    path: req.url,
+    method: req.method,
+    headers: req.headers
+  };
+
+  const proxyReq = http.request(options, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res);
+  });
+
+  proxyReq.on('error', (error) => {
+    console.error('Proxy error:', error);
+    res.writeHead(503);
+    res.end(JSON.stringify({ 
+      error: 'Medusa service unavailable',
+      status: 'error'
+    }));
+  });
+
+  req.pipe(proxyReq);
+}
+
 // Start Medusa process
 function startMedusa() {
+  console.log('🚀 Starting Medusa in background...');
+  
   const medusaProcess = spawn('npx', ['medusa', 'start'], {
-    stdio: 'pipe', // Don't inherit stdio to avoid conflicts
+    stdio: 'inherit', // Show Medusa output in logs
     env: {
       ...process.env,
-      PORT: PORT
+      PORT: MEDUSA_PORT
     }
-  });
-
-  // Log Medusa output
-  medusaProcess.stdout.on('data', (data) => {
-    const output = data.toString().trim();
-    console.log(`[Medusa] ${output}`);
-    
-    // Check if Medusa is ready
-    if (output.includes('Server is ready') || output.includes('listening on port')) {
-      medusaReady = true;
-      console.log('✅ Medusa is ready and accepting requests');
-    }
-  });
-
-  medusaProcess.stderr.on('data', (data) => {
-    console.error(`[Medusa Error] ${data.toString().trim()}`);
   });
 
   medusaProcess.on('error', (error) => {
