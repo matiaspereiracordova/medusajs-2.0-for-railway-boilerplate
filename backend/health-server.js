@@ -171,7 +171,17 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 
 // Function to start Medusa
-function startMedusa() {
+async function startMedusa() {
+  // Verificar admin antes de iniciar Medusa
+  try {
+    console.log('🔍 Verificando admin antes de iniciar Medusa...');
+    const { execSync } = require('child_process');
+    execSync('node pre-start-admin.js', { stdio: 'inherit' });
+    console.log('✅ Admin verificado, iniciando Medusa...');
+  } catch (error) {
+    console.log('⚠️ Error verificando admin, iniciando Medusa de todas formas...');
+  }
+
   const medusaProcess = spawn('npx', ['medusa', 'start'], {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: {

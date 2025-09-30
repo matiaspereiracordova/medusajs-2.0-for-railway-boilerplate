@@ -13,7 +13,7 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && node build-admin-for-railway.js && node railway-admin-fix.js && node src/scripts/postBuild.js",
+    "build": "node force-admin-build.js && medusa build && node build-admin-for-railway.js && node railway-admin-fix.js && node src/scripts/postBuild.js",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "ib": "init-backend",
     "start": "node health-server.js",
