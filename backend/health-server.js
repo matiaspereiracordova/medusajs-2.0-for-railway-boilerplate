@@ -116,7 +116,7 @@ function startMedusa() {
       ...process.env,
       PORT: MEDUSA_PORT,
       MEDUSA_INTERNAL_PORT: MEDUSA_PORT, // Set internal port for Medusa
-      MEDUSA_DISABLE_ADMIN: 'true',
+      MEDUSA_DISABLE_ADMIN: 'false', // Enable admin
       // Ensure CORS is properly configured
       ADMIN_CORS: '*',
       AUTH_CORS: '*',

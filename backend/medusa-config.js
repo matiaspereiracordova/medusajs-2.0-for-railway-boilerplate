@@ -42,12 +42,16 @@ const medusaConfig = {
       cookieSecret: COOKIE_SECRET
     },
     build: {
-      // Simplified build configuration
+      // Admin build configuration
+      admin: {
+        path: './admin',
+        outDir: './admin/dist'
+      }
     }
   },
   admin: {
     backendUrl: BACKEND_URL,
-    disable: true, // Disable admin temporarily to fix build issues
+    disable: false, // Enable admin
   },
   modules: [
     // Módulo Odoo para integración ERP
