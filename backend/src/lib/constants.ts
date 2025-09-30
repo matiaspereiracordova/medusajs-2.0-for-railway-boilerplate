@@ -10,9 +10,14 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 export const IS_DEV = process.env.NODE_ENV === 'development'
 
 /**
+ * Port for the backend server
+ */
+export const PORT = process.env.PORT ?? 9000
+
+/**
  * Public URL for the backend
  */
-export const BACKEND_URL = process.env.BACKEND_PUBLIC_URL ?? process.env.RAILWAY_PUBLIC_DOMAIN_VALUE ?? 'http://localhost:9000'
+export const BACKEND_URL = process.env.BACKEND_PUBLIC_URL ?? process.env.RAILWAY_PUBLIC_DOMAIN_VALUE ?? `http://localhost:${PORT}`
 
 /**
  * Database URL for Postgres instance used by the backend

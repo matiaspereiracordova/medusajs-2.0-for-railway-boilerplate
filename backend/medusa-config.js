@@ -6,6 +6,7 @@ import {
   COOKIE_SECRET,
   DATABASE_URL,
   JWT_SECRET,
+  PORT,
   REDIS_URL,
   RESEND_API_KEY,
   RESEND_FROM_EMAIL,
@@ -33,6 +34,7 @@ const medusaConfig = {
     redisUrl: REDIS_URL,
     workerMode: WORKER_MODE,
     http: {
+      port: PORT,
       adminCors: ADMIN_CORS,
       authCors: AUTH_CORS,
       storeCors: STORE_CORS,
