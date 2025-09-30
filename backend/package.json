@@ -20,7 +20,8 @@
     "dev": "medusa develop",
     "email:dev": "email dev --dir=./src/modules/email-notifications/templates --port=3002",
     "test:odoo": "npx ts-node src/scripts/test-odoo-connection.ts",
-    "test:sync": "npx ts-node src/scripts/test-sync-workflow.ts"
+    "test:sync": "npx ts-node src/scripts/test-sync-workflow.ts",
+    "test:admin": "npx ts-node src/scripts/test-admin.ts"
   },
   "dependencies": {
     "@medusajs/admin-sdk": "2.10.3",

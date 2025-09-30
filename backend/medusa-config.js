@@ -22,7 +22,11 @@ import {
   MINIO_SECRET_KEY,
   MINIO_BUCKET,
   MEILISEARCH_HOST,
-  MEILISEARCH_ADMIN_KEY
+  MEILISEARCH_ADMIN_KEY,
+  ODOO_URL,
+  ODOO_DB,
+  ODOO_USERNAME,
+  ODOO_API_KEY
 } from 'lib/constants';
 
 loadEnv(process.env.NODE_ENV, process.cwd());
@@ -51,17 +55,17 @@ const medusaConfig = {
   },
   admin: {
     backendUrl: BACKEND_URL,
-    disable: true, // Disable admin temporarily due to build issues
+    disable: false, // Enable admin panel
   },
   modules: [
     // Módulo Odoo para integración ERP
-    ...(process.env.ODOO_URL && process.env.ODOO_DB && process.env.ODOO_USERNAME && process.env.ODOO_API_KEY ? [{
+    ...(ODOO_URL && ODOO_DB && ODOO_USERNAME && ODOO_API_KEY ? [{
       resolve: './src/modules/odoo',
       options: {
-        url: process.env.ODOO_URL,
-        dbName: process.env.ODOO_DB,
-        username: process.env.ODOO_USERNAME,
-        apiKey: process.env.ODOO_API_KEY,
+        url: ODOO_URL,
+        dbName: ODOO_DB,
+        username: ODOO_USERNAME,
+        apiKey: ODOO_API_KEY,
       },
     }] : []),
     {

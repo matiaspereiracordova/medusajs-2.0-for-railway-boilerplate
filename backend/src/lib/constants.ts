@@ -105,3 +105,11 @@ export const WORKER_MODE =
  * Disable Admin
  */
 export const SHOULD_DISABLE_ADMIN = process.env.MEDUSA_DISABLE_ADMIN === 'true'
+
+/**
+ * Odoo ERP Integration Configuration
+ */
+export const ODOO_URL = process.env.ODOO_URL;
+export const ODOO_DB = process.env.ODOO_DB;
+export const ODOO_USERNAME = process.env.ODOO_USERNAME;
+export const ODOO_API_KEY = process.env.ODOO_API_KEY;
