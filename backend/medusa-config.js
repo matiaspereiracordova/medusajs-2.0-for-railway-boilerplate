@@ -35,9 +35,9 @@ const medusaConfig = {
     workerMode: WORKER_MODE,
     http: {
       port: PORT,
-      adminCors: ADMIN_CORS,
-      authCors: AUTH_CORS,
-      storeCors: STORE_CORS,
+      adminCors: ADMIN_CORS || "*",
+      authCors: AUTH_CORS || "*", 
+      storeCors: STORE_CORS || "*",
       jwtSecret: JWT_SECRET,
       cookieSecret: COOKIE_SECRET
     },
