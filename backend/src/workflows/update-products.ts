@@ -1,8 +1,18 @@
 import {
   createWorkflow,
-  WorkflowTypes,
+  createStep,
+  StepResponse,
   WorkflowResponse,
-} from "@medusajs/framework/types"
+} from "@medusajs/workflows-sdk"
+import { MedusaContainer } from "@medusajs/framework/types"
+
+// Tipos para el servicio
+interface ProductService {
+  listProducts(filters: { external_id: string }): Promise<any[]>
+  updateProducts(id: string, data: any): Promise<any>
+  updateProductVariants(id: string, data: any): Promise<any>
+  createProductVariants(data: any): Promise<any>
+}
 
 type UpdateProductWorkflowInput = {
   products: Array<{
@@ -28,12 +38,14 @@ type UpdateProductWorkflowInput = {
   }>
 }
 
-export const updateProductsWorkflow = createWorkflow(
-  "updateProducts",
-  function (input: UpdateProductWorkflowInput, container) {
-    const productService = container.resolve("productService")
-    
-    const updatedProducts = input.products.map(async (productData) => {
+// Step para actualizar productos
+const updateProductsStep = createStep(
+  "update-products",
+  async (products: UpdateProductWorkflowInput["products"], { container }: { container: MedusaContainer }) => {
+    const productService = container.resolve("productService") as ProductService
+    const updatedProducts = []
+
+    for (const productData of products) {
       try {
         // Buscar el producto existente por external_id si no se proporciona id
         let productId = productData.id
@@ -85,28 +97,43 @@ export const updateProductsWorkflow = createWorkflow(
           }
         }
 
-        return {
+        updatedProducts.push({
           success: true,
           product: updatedProduct,
           message: `Producto ${productData.title} actualizado exitosamente`,
-        }
+        })
       } catch (error) {
-        return {
+        updatedProducts.push({
           success: false,
           product: null,
           error: error.message,
           message: `Error actualizando producto ${productData.title}: ${error.message}`,
-        }
+        })
       }
-    })
+    }
 
-    return new WorkflowResponse({
+    return new StepResponse({
       products: updatedProducts,
       summary: {
-        total: input.products.length,
+        total: products.length,
         successful: updatedProducts.filter(p => p.success).length,
         failed: updatedProducts.filter(p => !p.success).length,
       },
+    })
+  }
+)
+
+// Workflow principal
+export const updateProductsWorkflow = createWorkflow(
+  "updateProducts",
+  function (input: UpdateProductWorkflowInput) {
+    // Ejecutar el step de actualización de productos
+    const result = updateProductsStep(input.products)
+
+    // Retornar resultado
+    return new WorkflowResponse({
+      products: result.products,
+      summary: result.summary,
     })
   }
 )

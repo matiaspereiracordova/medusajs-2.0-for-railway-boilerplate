@@ -1,8 +1,16 @@
 import {
   createWorkflow,
-  WorkflowTypes,
+  createStep,
+  StepResponse,
   WorkflowResponse,
-} from "@medusajs/framework/types"
+} from "@medusajs/workflows-sdk"
+import { MedusaContainer } from "@medusajs/framework/types"
+
+// Tipos para el servicio
+interface ProductService {
+  createProducts(data: any): Promise<any>
+  createProductVariants(data: any): Promise<any>
+}
 
 type CreateProductWorkflowInput = {
   products: Array<{
@@ -26,12 +34,14 @@ type CreateProductWorkflowInput = {
   }>
 }
 
-export const createProductsWorkflow = createWorkflow(
-  "createProducts",
-  function (input: CreateProductWorkflowInput, container) {
-    const productService = container.resolve("productService")
-    
-    const createdProducts = input.products.map(async (productData) => {
+// Step para crear productos
+const createProductsStep = createStep(
+  "create-products",
+  async (products: CreateProductWorkflowInput["products"], { container }: { container: MedusaContainer }) => {
+    const productService = container.resolve("productService") as ProductService
+    const createdProducts = []
+
+    for (const productData of products) {
       try {
         // Crear el producto principal
         const product = await productService.createProducts({
@@ -56,28 +66,43 @@ export const createProductsWorkflow = createWorkflow(
           })
         }
 
-        return {
+        createdProducts.push({
           success: true,
           product,
           message: `Producto ${productData.title} creado exitosamente`,
-        }
+        })
       } catch (error) {
-        return {
+        createdProducts.push({
           success: false,
           product: null,
           error: error.message,
           message: `Error creando producto ${productData.title}: ${error.message}`,
-        }
+        })
       }
-    })
+    }
 
-    return new WorkflowResponse({
+    return new StepResponse({
       products: createdProducts,
       summary: {
-        total: input.products.length,
+        total: products.length,
         successful: createdProducts.filter(p => p.success).length,
         failed: createdProducts.filter(p => !p.success).length,
       },
+    })
+  }
+)
+
+// Workflow principal
+export const createProductsWorkflow = createWorkflow(
+  "createProducts",
+  function (input: CreateProductWorkflowInput) {
+    // Ejecutar el step de creación de productos
+    const result = createProductsStep(input.products)
+
+    // Retornar resultado
+    return new WorkflowResponse({
+      products: result.products,
+      summary: result.summary,
     })
   }
 )
