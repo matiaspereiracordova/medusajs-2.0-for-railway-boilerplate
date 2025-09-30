@@ -51,7 +51,7 @@ const medusaConfig = {
   },
   admin: {
     backendUrl: BACKEND_URL,
-    disable: true, // Disable admin temporarily due to build issues
+    disable: false, // Enable admin
   },
   modules: [
     // Módulo Odoo para integración ERP
