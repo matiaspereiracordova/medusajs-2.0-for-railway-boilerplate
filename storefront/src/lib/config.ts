@@ -3,7 +3,12 @@ import Medusa from "@medusajs/js-sdk"
 // Defaults to standard port for Medusa server
 let MEDUSA_BACKEND_URL = "http://localhost:9000"
 
-if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+// Railway environment variables
+if (process.env.RAILWAY_PUBLIC_DOMAIN) {
+  // Use Railway's public domain for backend
+  MEDUSA_BACKEND_URL = `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+} else if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  // Use custom backend URL if provided
   MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 }
 
