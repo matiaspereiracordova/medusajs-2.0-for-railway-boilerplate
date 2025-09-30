@@ -34,7 +34,7 @@ const medusaConfig = {
     redisUrl: REDIS_URL,
     workerMode: WORKER_MODE,
     http: {
-      port: PORT,
+      port: process.env.MEDUSA_INTERNAL_PORT || PORT, // Use internal port when running in health server
       adminCors: ADMIN_CORS || "*",
       authCors: AUTH_CORS || "*", 
       storeCors: STORE_CORS || "*",

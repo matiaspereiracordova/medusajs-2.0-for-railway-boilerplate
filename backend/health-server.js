@@ -110,11 +110,12 @@ function proxyToMedusa(req, res) {
 function startMedusa() {
   console.log('🚀 Starting Medusa in background...');
   
-  const medusaProcess = spawn('npx', ['medusa', 'start', '--config', 'medusa-config-railway.js'], {
+  const medusaProcess = spawn('npx', ['medusa', 'start'], {
     stdio: 'inherit', // Show Medusa output in logs
     env: {
       ...process.env,
       PORT: MEDUSA_PORT,
+      MEDUSA_INTERNAL_PORT: MEDUSA_PORT, // Set internal port for Medusa
       MEDUSA_DISABLE_ADMIN: 'true',
       // Ensure CORS is properly configured
       ADMIN_CORS: '*',
