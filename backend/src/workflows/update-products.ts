@@ -4,7 +4,7 @@ import {
   StepResponse,
   WorkflowResponse,
 } from "@medusajs/workflows-sdk"
-import { MedusaContainer } from "@medusajs/framework/types"
+import { MedusaContainer } from "@medusajs/types"
 
 // Tipos para el servicio
 interface ProductService {
