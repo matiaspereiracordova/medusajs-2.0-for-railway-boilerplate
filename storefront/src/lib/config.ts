@@ -4,12 +4,24 @@ import Medusa from "@medusajs/js-sdk"
 let MEDUSA_BACKEND_URL = "http://localhost:9000"
 
 // Railway environment variables
-if (process.env.RAILWAY_PUBLIC_DOMAIN) {
-  // Use Railway's public domain for backend
-  MEDUSA_BACKEND_URL = `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-} else if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
   // Use custom backend URL if provided
   MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+} else if (process.env.RAILWAY_BACKEND_URL) {
+  // Use Railway backend URL if provided
+  MEDUSA_BACKEND_URL = process.env.RAILWAY_BACKEND_URL
+} else if (process.env.RAILWAY_PUBLIC_DOMAIN) {
+  // Fallback: try to construct backend URL from Railway domain
+  // This assumes backend is on a different subdomain or port
+  const frontendDomain = process.env.RAILWAY_PUBLIC_DOMAIN
+  if (frontendDomain.includes('storefront')) {
+    // If this is storefront domain, try to find backend domain
+    const backendDomain = frontendDomain.replace('storefront', 'backend')
+    MEDUSA_BACKEND_URL = `https://${backendDomain}`
+  } else {
+    // Default fallback
+    MEDUSA_BACKEND_URL = `https://${frontendDomain}`
+  }
 }
 
 // Log the backend URL for debugging
