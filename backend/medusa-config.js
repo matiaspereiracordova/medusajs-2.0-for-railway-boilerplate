@@ -55,7 +55,10 @@ const medusaConfig = {
   },
   admin: {
     backendUrl: BACKEND_URL,
-    disable: false, // Habilitar admin oficial de Medusa
+    disable: false,
+    // Configuración específica para Railway
+    path: "/admin",
+    outDir: "./admin/dist",
   },
   modules: [
     // Módulo Odoo para integración ERP
