@@ -36,6 +36,25 @@ try {
       const contents = fs.readdirSync(adminDir, { recursive: true });
       console.log('📋 Admin directory contents:', contents);
     }
+
+    // Also check .medusa directory
+    const medusaAdminPath = path.join(process.cwd(), '.medusa', 'admin');
+    if (fs.existsSync(medusaAdminPath)) {
+      console.log('📁 Found .medusa/admin directory');
+      const medusaContents = fs.readdirSync(medusaAdminPath, { recursive: true });
+      console.log('📋 .medusa/admin contents:', medusaContents);
+      
+      // Copy from .medusa/admin to admin/dist if needed
+      const medusaIndexPath = path.join(medusaAdminPath, 'index.html');
+      if (fs.existsSync(medusaIndexPath)) {
+        console.log('📋 Found index.html in .medusa/admin, copying...');
+        if (!fs.existsSync(adminDistPath)) {
+          fs.mkdirSync(adminDistPath, { recursive: true });
+        }
+        fs.copyFileSync(medusaIndexPath, adminIndexPath);
+        console.log('✅ Copied index.html to admin/dist');
+      }
+    }
   }
 
 } catch (error) {
