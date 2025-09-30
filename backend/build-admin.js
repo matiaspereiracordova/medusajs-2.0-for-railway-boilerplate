@@ -16,10 +16,27 @@ try {
 
   // Try to build admin using medusa build
   console.log('🚀 Running medusa build...');
-  execSync('npx medusa build', { 
-    stdio: 'inherit',
-    cwd: process.cwd()
-  });
+  try {
+    execSync('npx medusa build', { 
+      stdio: 'inherit',
+      cwd: process.cwd()
+    });
+  } catch (buildError) {
+    console.log('⚠️ Medusa build failed, trying alternative approach...');
+    console.log('Error:', buildError.message);
+    
+    // Try building just the admin
+    try {
+      console.log('🔨 Trying admin-only build...');
+      execSync('npx medusa build --admin-only', { 
+        stdio: 'inherit',
+        cwd: process.cwd()
+      });
+    } catch (adminBuildError) {
+      console.log('⚠️ Admin-only build also failed:', adminBuildError.message);
+      throw buildError; // Re-throw original error
+    }
+  }
 
   // Check if admin was built successfully
   const adminDistPath = path.join(process.cwd(), 'admin', 'dist');

@@ -55,7 +55,7 @@ const medusaConfig = {
   },
   admin: {
     backendUrl: BACKEND_URL,
-    disable: false, // Enable admin panel
+    disable: process.env.MEDUSA_DISABLE_ADMIN === 'true', // Solo deshabilitar si se especifica explícitamente
   },
   modules: [
     // Módulo Odoo para integración ERP
