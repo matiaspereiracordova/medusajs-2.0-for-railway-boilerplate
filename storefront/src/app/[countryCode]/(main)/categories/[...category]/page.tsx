@@ -15,32 +15,37 @@ type Props = {
   }
 }
 
-export async function generateStaticParams() {
-  const product_categories = await listCategories()
+// Disable static generation for categories to avoid build errors
+// when no categories exist in the database
+export const dynamic = 'force-dynamic'
 
-  if (!product_categories) {
-    return []
-  }
+// Commented out generateStaticParams to prevent build errors
+// export async function generateStaticParams() {
+//   const product_categories = await listCategories()
 
-  const countryCodes = await listRegions().then((regions: StoreRegion[]) =>
-    regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat()
-  )
+//   if (!product_categories) {
+//     return []
+//   }
 
-  const categoryHandles = product_categories.map(
-    (category: any) => category.handle
-  )
+//   const countryCodes = await listRegions().then((regions: StoreRegion[]) =>
+//     regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat()
+//   )
 
-  const staticParams = countryCodes
-    ?.map((countryCode: string | undefined) =>
-      categoryHandles.map((handle: any) => ({
-        countryCode,
-        category: [handle],
-      }))
-    )
-    .flat()
+//   const categoryHandles = product_categories.map(
+//     (category: any) => category.handle
+//   )
 
-  return staticParams
-}
+//   const staticParams = countryCodes
+//     ?.map((countryCode: string | undefined) =>
+//       categoryHandles.map((handle: any) => ({
+//         countryCode,
+//         category: [handle],
+//       }))
+//     )
+//     .flat()
+
+//   return staticParams
+// }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
