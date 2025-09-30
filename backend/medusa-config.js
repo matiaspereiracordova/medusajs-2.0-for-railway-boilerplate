@@ -56,8 +56,7 @@ const medusaConfig = {
   admin: {
     backendUrl: BACKEND_URL,
     disable: false,
-    // Configuración específica para Railway
-    path: "/admin",
+    // No especificar path - usar el por defecto de Medusa
     outDir: "./admin/dist",
   },
   modules: [
