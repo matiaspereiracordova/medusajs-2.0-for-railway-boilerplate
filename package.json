@@ -1,4 +1,12 @@
 {
+  "name": "medusajs-2.0-for-railway-boilerplate",
+  "version": "1.0.0",
+  "description": "MedusaJS 2.0 boilerplate for Railway deployment",
+  "scripts": {
+    "build": "cd backend && npm run build",
+    "start": "cd backend && npm run start",
+    "dev": "cd backend && npm run dev"
+  },
   "dependencies": {
     "@medusajs/framework": "^2.10.3",
     "json-rpc-2.0": "^1.7.1"
