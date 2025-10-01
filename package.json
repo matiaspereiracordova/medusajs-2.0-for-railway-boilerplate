@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "MedusaJS 2.0 boilerplate for Railway deployment",
   "scripts": {
-    "build": "cd backend && npm run build",
-    "start": "cd backend && npm run start",
-    "dev": "cd backend && npm run dev"
+    "build": "cd backend && npm ci && npm run build",
+    "start": "cd backend && npm run start"
   },
   "dependencies": {
     "@medusajs/framework": "^2.10.3",
