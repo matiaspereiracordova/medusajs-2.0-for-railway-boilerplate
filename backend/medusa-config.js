@@ -46,13 +46,6 @@ const medusaConfig = {
       jwtSecret: JWT_SECRET,
       cookieSecret: COOKIE_SECRET
     },
-    build: {
-      // Admin build configuration
-      admin: {
-        path: './admin',
-        outDir: './admin/dist'
-      }
-    }
   },
   admin: {
     backendUrl: BACKEND_URL,
