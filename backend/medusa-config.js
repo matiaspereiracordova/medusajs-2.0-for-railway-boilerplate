@@ -1,4 +1,4 @@
-import { loadEnv, Modules, defineConfig } from '@medusajs/utils';
+import { loadEnv, defineConfig } from '@medusajs/utils';
 import {
   ADMIN_CORS,
   AUTH_CORS,
@@ -96,30 +96,6 @@ const medusaConfig = {
         bucket: MINIO_BUCKET,
       },
     },
-
-    // Módulos oficiales de MedusaJS
-    Modules.USER,
-    Modules.AUTH,
-    Modules.PRODUCT,
-    Modules.PRICING,
-    Modules.PROMOTION,
-    Modules.CART,
-    Modules.WORKFLOW_ENGINE,
-    Modules.ORDER,
-    Modules.PAYMENT,
-    Modules.FULFILLMENT,
-    Modules.INVENTORY,
-    Modules.STOCK_LOCATION,
-    Modules.REGION,
-    Modules.SALES_CHANNEL,
-    Modules.CUSTOMER,
-    Modules.NOTIFICATION,
-    Modules.FILE,
-    Modules.EVENT_BUS,
-    Modules.CACHE,
-    Modules.SEARCH,
-    Modules.API_KEY,
-    Modules.DRAFT_ORDER,
   ],
   workflows: [
     {
