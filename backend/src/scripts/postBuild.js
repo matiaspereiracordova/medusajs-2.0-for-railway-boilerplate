@@ -32,31 +32,33 @@ console.log('Installing dependencies in .medusa/server...');
 try {
   execSync('npm ci --omit=dev --legacy-peer-deps', { 
     cwd: MEDUSA_SERVER_PATH,
-    stdio: 'inherit'
+    stdio: 'inherit',
+    timeout: 60000 // 60 second timeout
   });
 } catch (error) {
   console.log('npm ci failed, trying npm install...');
   execSync('npm install --omit=dev --legacy-peer-deps', { 
     cwd: MEDUSA_SERVER_PATH,
-    stdio: 'inherit'
+    stdio: 'inherit',
+    timeout: 60000 // 60 second timeout
   });
 }
 
-// Run Railway admin fix
+// Run Railway admin fix (simplified)
 console.log('Running Railway admin fix...');
 try {
-  execSync('node ../fix-railway-admin.js', { 
-    cwd: MEDUSA_SERVER_PATH,
-    stdio: 'inherit'
-  });
-} catch (error) {
-  console.log('Railway admin fix failed, trying from root...');
-  try {
+  // Check if fix script exists and run it
+  const fixScriptPath = path.join(process.cwd(), 'fix-railway-admin.js');
+  if (fs.existsSync(fixScriptPath)) {
     execSync('node fix-railway-admin.js', { 
       cwd: process.cwd(),
-      stdio: 'inherit'
+      stdio: 'inherit',
+      timeout: 30000 // 30 second timeout
     });
-  } catch (error2) {
-    console.error('Railway admin fix failed:', error2.message);
+  } else {
+    console.log('Railway admin fix script not found, skipping...');
   }
+} catch (error) {
+  console.log('Railway admin fix failed:', error.message);
+  // Don't fail the build if admin fix fails
 }
