@@ -1,54 +1,28 @@
 import { loadEnv, defineConfig } from '@medusajs/utils';
-import {
-  ADMIN_CORS,
-  AUTH_CORS,
-  BACKEND_URL,
-  COOKIE_SECRET,
-  DATABASE_URL,
-  JWT_SECRET,
-  PORT,
-  REDIS_URL,
-  WORKER_MODE,
-  ODOO_URL,
-  ODOO_DB,
-  ODOO_USERNAME,
-  ODOO_API_KEY
-} from 'lib/constants';
 
 loadEnv(process.env.NODE_ENV, process.cwd());
 
 const medusaConfig = {
   projectConfig: {
-    databaseUrl: DATABASE_URL,
+    databaseUrl: process.env.DATABASE_URL,
     databaseLogging: false,
-    redisUrl: REDIS_URL,
-    workerMode: WORKER_MODE,
+    redisUrl: process.env.REDIS_URL,
+    workerMode: process.env.WORKER_MODE || false,
     http: {
-      port: PORT,
+      port: process.env.PORT || 9000,
       host: "0.0.0.0",
-      adminCors: ADMIN_CORS || "*",
-      authCors: AUTH_CORS || "*", 
+      adminCors: process.env.ADMIN_CORS || "*",
+      authCors: process.env.AUTH_CORS || "*", 
       storeCors: "*",
-      jwtSecret: JWT_SECRET,
-      cookieSecret: COOKIE_SECRET
+      jwtSecret: process.env.JWT_SECRET,
+      cookieSecret: process.env.COOKIE_SECRET
     },
   },
   admin: {
-    backendUrl: BACKEND_URL,
+    backendUrl: process.env.BACKEND_URL || process.env.RAILWAY_PUBLIC_DOMAIN_VALUE || `http://localhost:${process.env.PORT || 9000}`,
     disable: false,
   },
-  modules: [
-    // Módulo Odoo para integración ERP (solo si las variables están disponibles)
-    ...(ODOO_URL && ODOO_DB && ODOO_USERNAME && ODOO_API_KEY ? [{
-      resolve: './src/modules/odoo',
-      options: {
-        url: ODOO_URL,
-        dbName: ODOO_DB,
-        username: ODOO_USERNAME,
-        apiKey: ODOO_API_KEY,
-      },
-    }] : []),
-  ],
+  modules: [],
   workflows: [],
   jobs: [],
   subscribers: [],
