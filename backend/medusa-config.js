@@ -39,6 +39,7 @@ const medusaConfig = {
     workerMode: WORKER_MODE,
     http: {
       port: PORT, // Use Railway port directly
+      host: "0.0.0.0", // Listen on all interfaces for Railway
       adminCors: ADMIN_CORS || "*",
       authCors: AUTH_CORS || "*", 
       storeCors: STORE_CORS || "*",
