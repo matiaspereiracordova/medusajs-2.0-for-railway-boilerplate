@@ -41,3 +41,22 @@ try {
     stdio: 'inherit'
   });
 }
+
+// Run Railway admin fix
+console.log('Running Railway admin fix...');
+try {
+  execSync('node ../fix-railway-admin.js', { 
+    cwd: MEDUSA_SERVER_PATH,
+    stdio: 'inherit'
+  });
+} catch (error) {
+  console.log('Railway admin fix failed, trying from root...');
+  try {
+    execSync('node fix-railway-admin.js', { 
+      cwd: process.cwd(),
+      stdio: 'inherit'
+    });
+  } catch (error2) {
+    console.error('Railway admin fix failed:', error2.message);
+  }
+}
