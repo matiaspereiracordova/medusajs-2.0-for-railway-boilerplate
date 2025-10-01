@@ -1,4 +1,4 @@
-import { loadEnv, defineConfig } from '@medusajs/utils';
+const { loadEnv, defineConfig } = require('@medusajs/utils');
 
 loadEnv(process.env.NODE_ENV, process.cwd());
 
@@ -34,4 +34,4 @@ const medusaConfig = {
   },
 };
 
-export default defineConfig(medusaConfig);
+module.exports = defineConfig(medusaConfig);

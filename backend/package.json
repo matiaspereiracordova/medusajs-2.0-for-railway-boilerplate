@@ -4,6 +4,7 @@
   "description": "A Prebaked Medusa 2.0 backend",
   "author": "Rasmus Puls",
   "license": "MIT",
+  "type": "commonjs",
   "keywords": [
     "sqlite",
     "postgres",
