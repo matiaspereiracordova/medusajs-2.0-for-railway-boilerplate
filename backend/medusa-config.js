@@ -20,7 +20,7 @@ const medusaConfig = {
   },
   admin: {
     backendUrl: process.env.BACKEND_URL || process.env.RAILWAY_PUBLIC_DOMAIN_VALUE || `http://localhost:${process.env.PORT || 9000}`,
-    disable: false,
+    disable: true, // Temporarily disable to get server running
   },
   modules: [],
   workflows: [],
