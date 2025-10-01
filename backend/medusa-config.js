@@ -38,8 +38,8 @@ const medusaConfig = {
     redisUrl: REDIS_URL,
     workerMode: WORKER_MODE,
     http: {
-      port: PORT, // Use Railway port directly
-      host: "0.0.0.0", // Listen on all interfaces for Railway
+      port: PORT,
+      host: "0.0.0.0",
       adminCors: ADMIN_CORS || "*",
       authCors: AUTH_CORS || "*", 
       storeCors: STORE_CORS || "*",
@@ -49,7 +49,7 @@ const medusaConfig = {
   },
   admin: {
     backendUrl: BACKEND_URL,
-    disable: true, // Temporarily disable to get server running
+    disable: false,
   },
   modules: [
     // Módulo Odoo para integración ERP
@@ -62,114 +62,104 @@ const medusaConfig = {
         apiKey: ODOO_API_KEY,
       },
     }] : []),
+    
+    // Módulo de notificaciones por email
     {
-      key: Modules.FILE,
-      resolve: '@medusajs/file',
-      options: {
-        providers: [
-          ...(MINIO_ENDPOINT && MINIO_ACCESS_KEY && MINIO_SECRET_KEY ? [{
-            resolve: './src/modules/minio-file',
-            id: 'minio',
-            options: {
-              endPoint: MINIO_ENDPOINT,
-              accessKey: MINIO_ACCESS_KEY,
-              secretKey: MINIO_SECRET_KEY,
-              bucket: MINIO_BUCKET // Optional, default: medusa-media
-            }
-          }] : [{
-            resolve: '@medusajs/file-local',
-            id: 'local',
-            options: {
-              upload_dir: 'static',
-              backend_url: `${BACKEND_URL}/static`
-            }
-          }])
-        ]
-      }
-    },
-    ...(REDIS_URL ? [{
-      key: Modules.EVENT_BUS,
-      resolve: '@medusajs/event-bus-redis',
-      options: {
-        redisUrl: REDIS_URL
-      }
-    },
-    {
-      key: Modules.WORKFLOW_ENGINE,
-      resolve: '@medusajs/workflow-engine-redis',
-      options: {
-        redis: {
-          url: REDIS_URL,
-        }
-      }
-    }] : []),
-    ...(SENDGRID_API_KEY && SENDGRID_FROM_EMAIL || RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
-      key: Modules.NOTIFICATION,
-      resolve: '@medusajs/notification',
-      options: {
-        providers: [
-          ...(SENDGRID_API_KEY && SENDGRID_FROM_EMAIL ? [{
-            resolve: '@medusajs/notification-sendgrid',
-            id: 'sendgrid',
-            options: {
-              channels: ['email'],
-              api_key: SENDGRID_API_KEY,
-              from: SENDGRID_FROM_EMAIL,
-            }
-          }] : []),
-          ...(RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
-            resolve: './src/modules/email-notifications',
-            id: 'resend',
-            options: {
-              channels: ['email'],
-              api_key: RESEND_API_KEY,
-              from: RESEND_FROM_EMAIL,
-            },
-          }] : []),
-        ]
-      }
-    }] : []),
-    ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET ? [{
-      key: Modules.PAYMENT,
-      resolve: '@medusajs/payment',
+      resolve: './src/modules/email-notifications',
       options: {
         providers: [
           {
-            resolve: '@medusajs/payment-stripe',
-            id: 'stripe',
+            resolve: './src/modules/email-notifications/services/resend',
             options: {
-              apiKey: STRIPE_API_KEY,
-              webhookSecret: STRIPE_WEBHOOK_SECRET,
+              api_key: RESEND_API_KEY,
+              from_email: RESEND_FROM_EMAIL,
+            },
+          },
+          {
+            resolve: './src/modules/email-notifications/services/sendgrid',
+            options: {
+              api_key: SENDGRID_API_KEY,
+              from_email: SENDGRID_FROM_EMAIL,
             },
           },
         ],
       },
-    }] : [])
+    },
+
+    // Módulo de archivos MinIO
+    {
+      resolve: './src/modules/minio-file',
+      options: {
+        endpoint: MINIO_ENDPOINT,
+        accessKey: MINIO_ACCESS_KEY,
+        secretKey: MINIO_SECRET_KEY,
+        bucket: MINIO_BUCKET,
+      },
+    },
+
+    // Módulos oficiales de MedusaJS
+    Modules.USER,
+    Modules.AUTH,
+    Modules.PRODUCT,
+    Modules.PRICING,
+    Modules.PROMOTION,
+    Modules.CART,
+    Modules.WORKFLOW_ENGINE,
+    Modules.ORDER,
+    Modules.PAYMENT,
+    Modules.FULFILLMENT,
+    Modules.INVENTORY,
+    Modules.STOCK_LOCATION,
+    Modules.REGION,
+    Modules.SALES_CHANNEL,
+    Modules.CUSTOMER,
+    Modules.NOTIFICATION,
+    Modules.FILE,
+    Modules.EVENT_BUS,
+    Modules.CACHE,
+    Modules.SEARCH,
+    Modules.API_KEY,
+    Modules.DRAFT_ORDER,
+  ],
+  workflows: [
+    {
+      resolve: './src/workflows/create-products',
+    },
+    {
+      resolve: './src/workflows/update-products',
+    },
+    {
+      resolve: './src/workflows/sync-from-erp',
+    },
+  ],
+  jobs: [
+    {
+      resolve: './src/jobs/sync-products-from-erp',
+    },
+  ],
+  subscribers: [
+    {
+      resolve: './src/subscribers/invite-created',
+    },
+    {
+      resolve: './src/subscribers/order-placed',
+    },
   ],
   plugins: [
-  ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
-      resolve: '@rokmohar/medusa-plugin-meilisearch',
+    // Stripe plugin (opcional)
+    ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET ? [{
+      resolve: '@medusajs/plugin-stripe',
       options: {
-        config: {
-          host: MEILISEARCH_HOST,
-          apiKey: MEILISEARCH_ADMIN_KEY
-        },
-        settings: {
-          products: {
-            type: 'products',
-            enabled: true,
-            fields: ['id', 'title', 'description', 'handle', 'variant_sku', 'thumbnail'],
-            indexSettings: {
-              searchableAttributes: ['title', 'description', 'variant_sku'],
-              displayedAttributes: ['id', 'handle', 'title', 'description', 'variant_sku', 'thumbnail'],
-              filterableAttributes: ['id', 'handle'],
-            },
-            primaryKey: 'id',
-          }
-        }
-      }
-    }] : [])
-  ]
+        apiKey: STRIPE_API_KEY,
+        webhookSecret: STRIPE_WEBHOOK_SECRET,
+      },
+    }] : []),
+  ],
+  featureFlags: {
+    product_categories: true,
+    publishable_api_keys: true,
+    sales_channels: true,
+  },
 };
 
 export default defineConfig(medusaConfig);
