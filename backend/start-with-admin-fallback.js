@@ -87,3 +87,4 @@ process.on('SIGTERM', () => {
   console.log('🛑 Recibida señal de terminación...');
   medusaProcess.kill('SIGTERM');
 });
+

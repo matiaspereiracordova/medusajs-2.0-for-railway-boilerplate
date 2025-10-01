@@ -160,3 +160,4 @@ for (const path of criticalPaths) {
 }
 
 console.log('🎉 Fix para Railway completado exitosamente!');
+

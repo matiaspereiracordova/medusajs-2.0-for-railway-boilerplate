@@ -57,3 +57,4 @@ Para encontrar la URL correcta del backend:
 - Verifica que el backend esté desplegado y funcionando
 - Revisa los logs del backend para errores
 - Confirma que el health check del backend esté pasando
+

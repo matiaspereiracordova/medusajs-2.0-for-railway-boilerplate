@@ -45,3 +45,4 @@ try {
   console.error('❌ Error en build optimizado:', error.message);
   process.exit(1);
 }
+

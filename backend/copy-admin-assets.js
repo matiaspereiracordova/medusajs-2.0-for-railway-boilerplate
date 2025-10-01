@@ -66,3 +66,4 @@ try {
   console.error('❌ Error al copiar archivos del admin:', error.message);
   process.exit(1);
 }
+
